@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<math.h>
+#include<time.h>
+
 // sort
 void insertionSort(int*, int, int);
 void bubbleSort(int*, int, int);
@@ -9,7 +10,9 @@ void selectionSort(int*, int, int);
 void quickSort(int*, int, int);
 void heapSort(int*, int, int);
 
-// select
+// search
+int binarySearch(int*, int, int, int);
+int sequentialSearch(int*, int, int, int);
 
 int randomized_select(int*, int, int, int);
 
@@ -149,10 +152,13 @@ int first_lt_second(int *a, int m, int n, int k, int p){
 void max_heapify(int *a, int m, int n, int start){
     int len = n - m;
     int i = start - m;
-    while(i < len){
+    while(2*i+1 <= len){
         int left_child = 2 * i + 1;
         int right_child = 2 * i + 2;
-        int max = a[left_child + m] > a[right_child + m] ? left_child : right_child;
+        int max = left_child;
+        if(right_child < len){
+            max = a[left_child + m] > a[right_child + m] ? left_child : right_child;
+        }
         int b = first_lt_second(a, m, n, i + m, max + m);
         // 是否需要向下调整
         i = b ? max : len;
@@ -175,9 +181,41 @@ void heapSort(int *a, int m, int n){
 }
 //############### Sort ###############
 
-//############### Select ###############
+//############### Search ###############
+// search
+int search(int *a, int m, int n, int k){
+    int i = sequentialSearch(a, m, n, k);
+    //int i = binarySearch(a, m, n, k);
+    return i;
+}
 
+// Binary Search
+int binarySearch(int *a, int m, int n, int k){
+    int l = m, r = n;
+    while(l <= r){
+        int middle = (l + r) / 2;
+        if(a[middle] == k){
+            return middle;
+        }
+        if(a[middle] > k){
+            r = middle - 1;
+        }else{
+            l = middle + 1;
+        }
+    }
+    return -1;
+}
 
+// Sequential Search
+int sequentialSearch(int*a, int m, int n, int k){
+    int i = m;
+    for(; i <= n; i++){
+        if(a[i] == k){
+            return i;
+        }
+    }
+    return -1;
+}
 
 // Order Statistics
 // select ith in array from m to n
@@ -194,13 +232,21 @@ int randomized_select(int *a, int m, int n, int i){
     }
     return randomized_select(a, k + 1, n, i - k - 1);
 }
-//############### Select ###############
+//############### Search ###############
 
 int main(){
-    const int n = 11;
-    int a[11] = {1,2,3,4,5,9,7,8,-1,6,0};
-    sort(a, 0, n - 1);
-    printarray(a, n);
+    int len = 20;
+    int a[len];
+    int i = 0;
+    srand(time(0));
+    for(; i < len; i++){
+        a[i] = rand() % len;
+    }
+    printarray(a, len);
+    sort(a, 0, len - 1);
+    printarray(a, len);
+    int p = search(a, 0, len - 1, a[rand()%len]);
+    printf("%d %d\n", p, a[p]);
     return 0;
 }
 
