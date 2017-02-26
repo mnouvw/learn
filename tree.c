@@ -117,8 +117,57 @@ Node* search_BST(Node *root, int key){
 
 // ############### Binary Search Tree ###############
 
+// ############### Union-Find Set ###############
+#define set_len 13
+int set[set_len + 1];
+int rank[set_len + 1];
+
+void make_set(){
+    int i = 0;
+    for(; i < set_len; i++){
+        set[i] = i;
+        rank[i] = 1;
+    }
+}
+
+int find_set(int p){
+    if(set[p] != p){
+        set[p] = find_set(set[p]);
+    }
+    return set[p];
+}
+
+int is_same_set(int x, int y){
+    int x_p = find_set(x);
+    int y_p = find_set(y);
+    return x_p == y_p;
+}
+
+void union_set(int x, int y){
+    int x_p = find_set(x);
+    int y_p = find_set(y);
+
+    if(is_same_set(x_p, y_p)){
+        return;
+    }
+    if(rank[x_p] == rank[y_p]){
+        set[y_p] = x_p;
+        rank[x_p]++;
+    }
+
+    if(rank[x_p] > rank[y_p]){
+        set[y_p] = x_p;
+    } else{
+        set[x_p] = y_p;
+    }
+}
+
+// ############### Union-Find Set ###############
+
 // ############### main ###############
 int main(){
+    printf("order traversal\n");
+    // order traversal
     Node *root = makeNode(4);
     Node *l = makeNode(1);
     Node *r = makeNode(8);
@@ -131,8 +180,9 @@ int main(){
     order_traversal(root);
     freeNode(root);
 
-    printf("--------------------\n");
+    printf("--------------------\nbst\n");
 
+    // bst
     int n = 10;
     int a[n];
     int i = 0;
@@ -147,7 +197,17 @@ int main(){
     printf("%d %d\n", a[n - 1], k->data);
     freeNode(root);
 
-    printf("--------------------\n");
+    printf("--------------------\nunion-find set\n");
+
+    // union-find set
+    make_set();
+    union_set(1, 3);
+    union_set(1, 5);
+    union_set(3, 5);
+    union_set(5, 8);
+    printf("%d\n", is_same_set(8, 3));
+    printf("%d\n", is_same_set(1, 7));
+    printf("%d\n", is_same_set(2, 7));
 
     return 0;
 }
